@@ -38,6 +38,7 @@ def createUI(pWindowTitle, pApplyCallback):
     cmds.button ( label = 'Set now', command = functools.partial( setLGCallback, LG_setIndex ) )
     
     
+    
     cmds.separator(h=10, style = 'none')
     
     cmds.button ( label = 'Check', command = functools.partial( checkCallback ) )
@@ -51,7 +52,26 @@ def createUI(pWindowTitle, pApplyCallback):
     cmds.separator(h=10, style = 'none')
     
     cmds.button ( label = 'IntToExp', command = functools.partial( IntExpCallback ) )
+    cmds.separator(h=10, style = 'none')
     
+    
+    cmds.separator(h=25, style = 'none')
+    cmds.separator(h=25, style = 'none')
+    cmds.separator(h=25, style = 'none')
+    
+    
+    
+    cmds.text ( label = 'Intensity' )
+    cmds.text ( label = 'Exposure' )
+    cmds.separator(h=10, style = 'none')
+    
+    intValueA = cmds.floatField (value = 1)
+    expValueA = cmds.floatField (value = 0)
+    cmds.button ( label = 'IntToExp', command = functools.partial( transIntExpCallback, intValueA,  expValueA) )
+    
+    intValueB = cmds.floatField (value = 1)
+    expValueB = cmds.floatField (value = 0)
+    cmds.button ( label = 'ExpToInt', command = functools.partial( transExpIntCallback, intValueB,  expValueB) )
     
     
    
@@ -192,11 +212,26 @@ def IntExpCallback ( *pArgs ):
                         newExp = currentExp +( math.log(currentInt,2) )
                         cmds.setAttr (x+'.intensity', 1)
                         cmds.setAttr (x+'.exposure', newExp)
+                        
+                        
+def transIntExpCallback (intValueA,expValueA,*pArgs ):
+    intVal = cmds.floatField(intValueA, query = True, value = True)
+    expVal = cmds.floatField(expValueA, query = True, value = True)
+    totalInt = intVal *( 2**expVal )
+    newExpVal =  math.log(totalInt,2)
+    cmds.floatField(expValueA, edit = True, value = newExpVal)
+    
     
 
-createUI( 'light group selector', applyCallback )
+def transExpIntCallback (intValueB,expValueB,*pArgs ):
+    intVal = cmds.floatField(intValueB, query = True, value = True)
+    expVal = cmds.floatField(expValueB, query = True, value = True)
+    totalInt = intVal *( 2**expVal )
+    newIntVal =  totalInt /( 2**expVal )
+    cmds.floatField(intValueB, edit = True, value = totalInt)
 
-        
+createUI( 'light group selector', applyCallback )
+    
         
         
         
